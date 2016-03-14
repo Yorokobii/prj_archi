@@ -8,5 +8,5 @@ varying vec4 VFactif; //oh tient, on reçoit une valeur de type float de la part
 
 void main (void)
 {
-	gl_FragColor = VFactif; //vec4(0.0,0.0,1.0,1.0);		//"modif" de tous les pixels (bleu) pour l'instant
+	//gl_FragColor = gl_Color; //VFactif; //vec4(0.0,0.0,1.0,1.0);		//"modif" de tous les pixels (bleu) pour l'instant
 }

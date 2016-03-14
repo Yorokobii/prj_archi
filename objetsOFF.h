@@ -35,8 +35,8 @@ class Objet {
 	Objet();
 	Objet(const Objet&);
 	~Objet();
-	void charge_OFF(const char *);
 	void charge_OFFUV(const char* );
+	void charge_OFF(const char *);
 	void affiche();
 
 };
