@@ -13,6 +13,7 @@
 #include "fonctions.h"
 #include "objetsOFF.h"
 #include "texture.hpp"
+#include "balles.hpp"
 
 using namespace std;
 
@@ -22,6 +23,13 @@ GLSL_Program * mes_shaders;
 
 Texture mRaffin;
 Objet monObjet;
+Balles balles;
+
+int mouseX = 0;
+int mouseY = 0;
+
+float zPlan = -200.0;
+float Ratio = 0.0003f;
 
 float angle_x = 0.0f;
 float angle_y = 0.0f;
@@ -33,6 +41,7 @@ int windowWidth = 500;
 float angle = 0.0f;
 
 void GeomInit(void) {
+	srand(time(NULL));
 	unsigned int nfaces;
 
 	//monObjet.charge_OFF((const char*) "100x100points.off");
@@ -59,9 +68,9 @@ void GeomInit(void) {
 				glVertex3f(monObjet.lpoints[monObjet.lfaces[nfaces].S3].x, monObjet.lpoints[monObjet.lfaces[nfaces].S3].y, monObjet.lpoints[monObjet.lfaces[nfaces].S3].z);
 			}
 		glEnd();
+		glDisable(GL_TEXTURE_2D);
 	glEndList();
 
-	glDisable(GL_TEXTURE_2D);
 }
 
 static GLvoid callback_Window(GLsizei width, GLsizei height)
@@ -82,8 +91,6 @@ static GLvoid callback_Window(GLsizei width, GLsizei height)
 
 void callback_Idle() {
 	angle += 0.001f;
-	//angle_x += 0.01f;
-	//angle_y -= 0.01f;
 	glutPostRedisplay();
 }
 
@@ -95,7 +102,9 @@ void RenderScene(void) {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity(); //remise à 0 (identité)
 	gluPerspective(90.0, windowRatio, 0.1, 500); //définition d'une perspective (angle d'ouverture 130°,rapport L/H=1.0, near=0.1, far=100)
-    glTranslatef(0.0,0.0,-200.0);
+
+	balles.avancer(monObjet, zPlan);
+    glTranslatef(0.0,0.0,zPlan);
 	glRotatef(180,0.0,0.0,1.0);
 
 	//Modification de la matrice de modélisation de la scène
@@ -117,20 +126,6 @@ void RenderScene(void) {
 void callback_Keyboard(unsigned char key, int x, int y) {
 switch (key) {
 
-	case 'z':
-		angle_x++;
-		break;
-	case 's':
-		angle_x--;
-		break;
-
-	case 'q':
-		angle_y--;
-		break;
-	case 'd':
-		angle_y++;
-		break;
-
 	case ECHAP:
 		delete mes_shaders;
 		cout << "callback_Keyboard - " << "sortie de la boucle de rendu" << endl;
@@ -144,12 +139,30 @@ switch (key) {
 	}
 }
 
+GLvoid callback_Mouse(int button, int state, int x, int y) {
+	if (state == GLUT_DOWN && button == GLUT_LEFT_BUTTON) {
+		mouseX = x; mouseY = y;
+
+		float xf = x - windowWidth/2;
+		float yf = y - windowHeight/2;
+		float zf = - zPlan * Ratio;
+		xf *= Ratio;
+		yf *= Ratio;
+
+		Vec3 vecDef = {0.0, 0.0, 0.0};
+		Vec3 vitBalle = {-xf, yf, zf};
+
+		balles.lancer(vecDef, vitBalle);
+
+	}
+}
+
 static void InitializeGlutCallbacks()
 {
 	glutDisplayFunc(RenderScene);
 	glutIdleFunc(callback_Idle);
 	glutKeyboardFunc(callback_Keyboard);
-	//glutMotionFunc(callback_Mouse);
+	glutMouseFunc(callback_Mouse);
 	glutReshapeFunc(callback_Window);
 	//glutSpecialFunc(&callback_SpecialKeys);
 

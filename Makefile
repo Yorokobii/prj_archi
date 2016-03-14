@@ -10,7 +10,7 @@ main = main
 all: $(main)
 	@echo "\ncompilation terminee"
 
-$(main): fonctions.o objetsOFF.o texture.o glsl_fs.o glsl_vs.o glsl_program.o main.o
+$(main): fonctions.o objetsOFF.o texture.o balle.o balles.o glsl_fs.o glsl_vs.o glsl_program.o main.o
 	@echo "--- compilation de $@ ..."
 	$(compilateur) $^ $(link_options) -o $@
 	@echo "--- compilation de $@ terminée"
@@ -28,6 +28,12 @@ glsl_vs.o: glsl_vs.cpp glsl_vs.h
 	$(compilateur) $(preproc_options) $<
 
 objetsOFF.o: objetsOFF.cpp objetsOFF.h
+	$(compilateur) $(preproc_options) $<
+
+balle.o: balle.cpp balle.hpp
+	$(compilateur) $(preproc_options) $<
+
+balles.o: balles.cpp balles.hpp
 	$(compilateur) $(preproc_options) $<
 
 main.o: main.cpp
