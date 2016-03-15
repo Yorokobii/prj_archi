@@ -17,13 +17,18 @@
 
 using namespace std;
 
-
 #define ECHAP 27
-GLSL_Program * mes_shaders;
+GLSL_Program* mes_shaders;
+
+GLint loc;
+GLint tailleTab;
+GLint locCDeform;
 
 Texture mRaffin;
 Objet monObjet;
 Balles balles;
+
+vContraintes* contr;
 
 int mouseX = 0;
 int mouseY = 0;
@@ -117,6 +122,14 @@ void RenderScene(void) {
 	glRotatef(angle_x,1,0,0);
 	glRotatef(angle_y,0,1,0);
 
+	//transmission des valeurs de la structure Contrainte
+	/*glUniform3fv(where_centre, 1, maContrainte.centre);
+	glUniform3fv(where_vecteur, 1, maContrainte.vecteur);
+	glUniform1f(where_rayon, maContrainte.rayon);*/
+	contr = balles.makeArray();
+	glUniform1f(tailleTab, balles.tailleTab());
+	glUniform3fv(loc, 1, contr->vecD);
+
 	//Parce qu'on avait pas vu encore les dsiplay List...
 	glCallList(monObjet.id);
 
@@ -153,9 +166,42 @@ GLvoid callback_Mouse(int button, int state, int x, int y) {
 		Vec3 vitBalle = {-xf, yf, zf};
 
 		balles.lancer(vecDef, vitBalle);
-
 	}
 }
+
+
+
+void SetShaders(void) {
+	GLSL_VS le_vertex_shader;
+	GLSL_FS le_fragment_shader;
+
+	le_vertex_shader.ReadSource("vert.vert");
+	le_vertex_shader.Compile();
+
+	le_fragment_shader.ReadSource("frag.frag");
+	le_fragment_shader.Compile();
+
+	PrintShaderInfo(le_vertex_shader.idvs);
+	PrintShaderInfo(le_fragment_shader.idfs);
+	mes_shaders = new GLSL_Program();
+
+	mes_shaders -> Use_VertexShader(le_vertex_shader);
+	mes_shaders -> Use_FragmentShader(le_fragment_shader);
+
+	mes_shaders -> Link_Shaders();
+	mes_shaders -> Activate();
+
+	//on aura besoin de localiser ces données dans la mémoire de la carte graphique
+	//(pour pouvoir les modifier)
+	loc = glGetUniformLocation(mes_shaders -> idprogram, "vcontraintes");
+	tailleTab = glGetUniformLocation(mes_shaders -> idprogram, "lenght");
+	/*where_vecteur = glGetUniformLocation(mes_shaders -> idprogram, "Uv3vecteur_deformation");
+	where_rayon = glGetUniformLocation(mes_shaders -> idprogram, "Ufrayon_deformation");*/
+
+	PrintProgramInfo(mes_shaders -> idprogram);
+
+}
+
 
 static void InitializeGlutCallbacks()
 {
@@ -226,7 +272,7 @@ int main(int argc, char **argv) {
 
 	glutInitWindowPosition(100,100);
 	glutInitWindowSize(windowWidth, windowHeight);
-	glutCreateWindow("TP2 deformation VS FS");
+	glutCreateWindow("RaffinSplash");
 
 	//attachement des fonctions de l'OpenGL
 	//toujours après l'initialisation de glut

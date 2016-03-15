@@ -3,7 +3,7 @@
 #include "balle.hpp"
 
 
-Balle::Balle(Vec3 _vecteurDeform, Vec3 _vitesseBalle, unsigned int _rayonDeform)
+Balle::Balle(Vec3 _vecteurDeform, Vec3 _vitesseBalle, float _rayonDeform)
     :vecteurDeform(_vecteurDeform), vitesseBalle(_vitesseBalle), rayonDeform(_rayonDeform)
 {
     PositionBalle.x = 0.0;
@@ -17,7 +17,6 @@ Balle::Balle(Vec3 _vecteurDeform, Vec3 _vitesseBalle, unsigned int _rayonDeform)
     couleur.x = (float(rand()%100))/100.0;
     couleur.y = (float(rand()%100))/100.0;
     couleur.z = (float(rand()%100))/100.0;
-
 }
 
 bool Balle::avancer(float zPlan){
@@ -34,9 +33,24 @@ bool Balle::avancer(float zPlan){
         glDisable(GL_TEXTURE_2D);
             glColor3f(couleur.x, couleur.y, couleur.z);
             glTranslatef(PositionBalle.x, PositionBalle.y, PositionBalle.z);
-            glutSolidSphere(rayonDeform, 20, 20);
+            glutSolidSphere(rayonDeform, 50, 50);
         glEnable(GL_TEXTURE_2D);
     glPopMatrix();
 
-    if(PositionBalle.z <= zPlan*2) return true; else return false;
+    if(PositionBalle.z <= zPlan*2) return true;
+    else return false;
+}
+
+vContraintes Balle::makeArray(){
+    contraintes.vecD[0] = vecteurDeform.x;
+    contraintes.vecD[1] = vecteurDeform.y;
+    contraintes.vecD[2] = vecteurDeform.z;
+
+    contraintes.vecC[0] = centreDeform.x;
+    contraintes.vecC[1] = centreDeform.y;
+    contraintes.vecC[2] = centreDeform.z;
+
+    contraintes.r = rayonDeform;
+
+    return contraintes;
 }

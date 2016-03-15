@@ -12,8 +12,10 @@ private:
 public:
     inline Balles() {}
     inline ~Balles() {}
-    void lancer(Vec3, Vec3, unsigned int =1);
+    void lancer(Vec3, Vec3, float =1.0f);
     void avancer(Objet& , float); // Faire avancer les balles + test fin de vie
+    vContraintes* makeArray();
+    int tailleTab();
 };
 
 #endif
