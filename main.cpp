@@ -222,8 +222,11 @@ void SetShaders(void) {
 	/*where_vecteur = glGetUniformLocation(mes_shaders -> idprogram, "Uv3vecteur_deformation");
 	where_rayon = glGetUniformLocation(mes_shaders -> idprogram, "Ufrayon_deformation");*/
 
-	PrintProgramInfo(mes_shaders -> idprogram);
+	locCDeform = glGetUniformLocation(mes_shaders->idprogram, "vecCDeform");
+	locVDeform = glGetUniformLocation(mes_shaders->idprogram, "vecVDeform");
+	locRDeform = glGetUniformLocation(mes_shaders->idprogram, "rayonDeform");
 
+	PrintProgramInfo(mes_shaders -> idprogram);
 }
 
 
@@ -304,7 +307,7 @@ int main(int argc, char **argv) {
 
 	InitializeGlutCallbacks();
 	InitializeGL();
-	//SetShaders();
+	SetShaders();
 
 	GeomInit();
 
