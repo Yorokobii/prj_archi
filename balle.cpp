@@ -19,7 +19,7 @@ Balle::Balle(Vec3 _vecteurDeform, Vec3 _vitesseBalle, float _rayonDeform)
     couleur.z = (float(rand()%100))/100.0;
 }
 
-bool Balle::avancer(Objet& objet, float zPlan){
+bool Balle::avancer(Objet& objet, float zPlan, GLint locCDeform, GLint locVDeform, GLint locRDeform){
 
     PositionBalle.x -= vitesseBalle.x;
     PositionBalle.y -= vitesseBalle.y;
@@ -37,9 +37,29 @@ bool Balle::avancer(Objet& objet, float zPlan){
         glEnable(GL_TEXTURE_2D);
     glPopMatrix();
 
-    if(PositionBalle.z <= (zPlan + rayonDeform))
-            return true;
+    if(PositionBalle.z <= (zPlan + rayonDeform)){
+        if( PositionBalle.x >= (objet.min.x)-rayonDeform && PositionBalle.x <= (objet.max.x)+rayonDeform )
+            if( PositionBalle.y >= (objet.min.y)-rayonDeform && PositionBalle.y <= (objet.max.y)+rayonDeform ){
+                std::cerr<<"Mr. Raffin est touche"<<std::endl;
 
-    if(PositionBalle.z <= zPlan*2) return true;
+                tabCD[0] = centreDeform.x;
+                tabCD[1] = centreDeform.y;
+                tabCD[2] = centreDeform.z;
+
+                tabVD[0] = vecteurDeform.x;
+                tabVD[1] = vecteurDeform.y;
+                tabVD[2] = vecteurDeform.z;
+
+            	glUniform3fv(locCDeform, 1, tabCD);
+            	glUniform3fv(locVDeform, 1, tabVD);
+                glUniform1f(locRDeform, rayonDeform);
+            }
+
+
+        return true;
+    }
+
+
+    if(PositionBalle.z <= zPlan*3/2) return true;
     else return false;
 }

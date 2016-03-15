@@ -21,10 +21,13 @@ private:
     Vec3 centreDeform;
     Vec3 PositionBalle;
 
+    float tabCD[3];
+    float tabVD[3];
+
 public:
     Balle(Vec3, Vec3, float =1.0);
     inline ~Balle(){ }
-    bool avancer(Objet& objet, float);
+    bool avancer(Objet& objet, float, GLint, GLint, GLint );
     Vec3 couleur;
 
     inline const Vec3& getVDeform() const { return vecteurDeform; }

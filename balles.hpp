@@ -7,12 +7,15 @@
 class Balles {
 private:
     std::list<Balle> balles;
+    float cenDeform[3];
+    float vecDeform[3];
+    float rayDeform;
 
 public:
     inline Balles() {}
     inline ~Balles() {}
     void lancer(Vec3, Vec3, float =1.0f);
-    void avancer(Objet& , float); // Faire avancer les balles + test fin de vie
+    void avancer(Objet& , float, GLint, GLint, GLint ); // Faire avancer les balles + test fin de vie
     int tailleTab();
 };
 

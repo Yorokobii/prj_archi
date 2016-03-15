@@ -20,9 +20,9 @@ using namespace std;
 #define ECHAP 27
 GLSL_Program* mes_shaders;
 
-GLint loc;
-GLint tailleTab;
 GLint locCDeform;
+GLint locVDeform;
+GLint locRDeform;
 
 Texture mRaffin;
 Objet monObjet;
@@ -65,8 +65,6 @@ Vec3 GetMouseVec(int x, int y){
 	vec.x *= 0.0003;
 	vec.y *= 0.0003;
 	vec.z *= 0.0003;
-
-	std::cerr<< vec.x <<" "<< vec.y<<" "<< vec.z <<std::endl;
 
 	return vec;
 }
@@ -132,9 +130,9 @@ void RenderScene(void) {
 	//Modification de la matrice de projection
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity(); //remise à 0 (identité)
-	gluPerspective(90.0, windowRatio, 0.1, 500); //définition d'une perspective (angle d'ouverture 130°,rapport L/H=1.0, near=0.1, far=100)
+	gluPerspective(90.0, windowRatio, 0.1, 206); //définition d'une perspective (angle d'ouverture 130°,rapport L/H=1.0, near=0.1, far=100)
 
-	balles.avancer(monObjet, zPlan);
+	balles.avancer(monObjet, zPlan, locCDeform, locVDeform, locRDeform);
     glTranslatef(0.0,0.0,zPlan);
 	glRotatef(180,0.0,0.0,1.0);
 
@@ -191,8 +189,6 @@ GLvoid callback_Mouse(int button, int state, int x, int y) {
 
 		Vec3 vecDef = {0.0, 0.0, -1.0};
 		Vec3 vecBalle = GetMouseVec(x,y);
-
-		std::cerr << balles.tailleTab() << std::endl;
 		balles.lancer(vecDef, vecBalle);
 	}
 }
@@ -221,8 +217,8 @@ void SetShaders(void) {
 
 	//on aura besoin de localiser ces données dans la mémoire de la carte graphique
 	//(pour pouvoir les modifier)
-	loc = glGetUniformLocation(mes_shaders -> idprogram, "vcontraintes");
-	tailleTab = glGetUniformLocation(mes_shaders -> idprogram, "lenght");
+	//loc = glGetUniformLocation(mes_shaders -> idprogram, "vcontraintes");
+	//tailleTab = glGetUniformLocation(mes_shaders -> idprogram, "lenght");
 	/*where_vecteur = glGetUniformLocation(mes_shaders -> idprogram, "Uv3vecteur_deformation");
 	where_rayon = glGetUniformLocation(mes_shaders -> idprogram, "Ufrayon_deformation");*/
 
