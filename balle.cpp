@@ -19,7 +19,7 @@ Balle::Balle(Vec3 _vecteurDeform, Vec3 _vitesseBalle, float _rayonDeform)
     couleur.z = (float(rand()%100))/100.0;
 }
 
-bool Balle::avancer(float zPlan){
+bool Balle::avancer(Objet& objet, float zPlan){
 
     PositionBalle.x -= vitesseBalle.x;
     PositionBalle.y -= vitesseBalle.y;
@@ -37,24 +37,9 @@ bool Balle::avancer(float zPlan){
         glEnable(GL_TEXTURE_2D);
     glPopMatrix();
 
-    if(PositionBalle.z == zPlan + rayonDeform)
-        std::cerr<<"ENORME"<<std::endl;
-
+    if(PositionBalle.z <= (zPlan + rayonDeform))
+            return true;
 
     if(PositionBalle.z <= zPlan*2) return true;
     else return false;
-}
-
-vContraintes Balle::makeArray(){
-    contraintes.vecD[0] = vecteurDeform.x;
-    contraintes.vecD[1] = vecteurDeform.y;
-    contraintes.vecD[2] = vecteurDeform.z;
-
-    contraintes.vecC[0] = centreDeform.x;
-    contraintes.vecC[1] = centreDeform.y;
-    contraintes.vecC[2] = centreDeform.z;
-
-    contraintes.r = rayonDeform;
-
-    return contraintes;
 }

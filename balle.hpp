@@ -5,20 +5,13 @@
 #include <GL/gl.h>
 #include <GL/freeglut.h>
 #include <iostream>
-
-
+#include "objetsOFF.h"
 
 typedef struct Vector3 {
     float x;
     float y;
     float z;
 } Vec3;
-
-struct vContraintes {
-    float vecD[3];
-    float vecC[3];
-    float r;
-};
 
 class Balle {
 private:
@@ -27,14 +20,12 @@ private:
     float rayonDeform;
     Vec3 centreDeform;
     Vec3 PositionBalle;
-    vContraintes contraintes;
 
 public:
     Balle(Vec3, Vec3, float =1.0);
     inline ~Balle(){ }
-    bool avancer(float);
+    bool avancer(Objet& objet, float);
     Vec3 couleur;
-    vContraintes makeArray();
 
     inline const Vec3& getVDeform() const { return vecteurDeform; }
     inline const Vec3& getVBalle() const { return vitesseBalle; }

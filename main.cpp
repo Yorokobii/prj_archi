@@ -28,8 +28,6 @@ Texture mRaffin;
 Objet monObjet;
 Balles balles;
 
-vContraintes* contr;
-
 int mouseX = 0;
 int mouseY = 0;
 
@@ -62,7 +60,13 @@ Vec3 GetMouseVec(int x, int y){
 
 	gluUnProject( winX, winY, winZ, modelview, projection,viewport, &posX, &posY, &posZ);
 
-	Vec3 vec = {(float)posX, (float)posY, (float)posZ};
+	Vec3 vec = {(float)posX, -(float)posY, (float)(posZ + 200)};
+
+	vec.x *= 0.0003;
+	vec.y *= 0.0003;
+	vec.z *= 0.0003;
+
+	std::cerr<< vec.x <<" "<< vec.y<<" "<< vec.z <<std::endl;
 
 	return vec;
 }
@@ -148,9 +152,10 @@ void RenderScene(void) {
 	/*glUniform3fv(where_centre, 1, maContrainte.centre);
 	glUniform3fv(where_vecteur, 1, maContrainte.vecteur);
 	glUniform1f(where_rayon, maContrainte.rayon);*/
-	contr = balles.makeArray();
+	/*contr = balles.makeArray();
 	glUniform1f(tailleTab, balles.tailleTab());
-	glUniform3fv(loc, 1, contr->vecD);
+	glUniform3fv(loc, balles.tailleTab(), contr->vecD);
+	glUniform3fv(loc, balles.tailleTab(), contr->vecC); */
 
 	//Parce qu'on avait pas vu encore les dsiplay List...
 	glCallList(monObjet.id);
@@ -182,11 +187,12 @@ GLvoid callback_Mouse(int button, int state, int x, int y) {
 		float yf = y - windowHeight/2;
 		float zf = - zPlan * Ratio;
 		xf *= Ratio;
-		yf *= Ratio;*/		
+		yf *= Ratio;*/
 
 		Vec3 vecDef = {0.0, 0.0, -1.0};
 		Vec3 vecBalle = GetMouseVec(x,y);
 
+		std::cerr << balles.tailleTab() << std::endl;
 		balles.lancer(vecDef, vecBalle);
 	}
 }
