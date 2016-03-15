@@ -28,8 +28,6 @@ Texture mRaffin;
 Objet monObjet;
 Balles balles;
 
-vContraintes* contr;
-
 int mouseX = 0;
 int mouseY = 0;
 
@@ -122,13 +120,16 @@ void RenderScene(void) {
 	glRotatef(angle_x,1,0,0);
 	glRotatef(angle_y,0,1,0);
 
+	//std::cerr << balles.tailleTab() << std::endl;
+
 	//transmission des valeurs de la structure Contrainte
 	/*glUniform3fv(where_centre, 1, maContrainte.centre);
 	glUniform3fv(where_vecteur, 1, maContrainte.vecteur);
 	glUniform1f(where_rayon, maContrainte.rayon);*/
-	contr = balles.makeArray();
+	/*contr = balles.makeArray();
 	glUniform1f(tailleTab, balles.tailleTab());
-	glUniform3fv(loc, 1, contr->vecD);
+	glUniform3fv(loc, balles.tailleTab(), contr->vecD);
+	glUniform3fv(loc, balles.tailleTab(), contr->vecC); */
 
 	//Parce qu'on avait pas vu encore les dsiplay List...
 	glCallList(monObjet.id);

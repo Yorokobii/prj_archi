@@ -10,24 +10,11 @@ void Balles::avancer(Objet& objet, float zPlan){
 
     it = balles.begin();
     while(it != balles.end()){
-        if(it->avancer(zPlan)) it = balles.erase(it);
+        if(it->avancer(objet, zPlan)) it = balles.erase(it);
+
+
         else it++;
     }
-}
-
-vContraintes* Balles::makeArray(){
-    std::list<Balle>::iterator it;
-    vContraintes* contraintes = new vContraintes[balles.size()];
-
-    it = balles.begin();
-    int cpt = 0;
-    while(it != balles.end()){
-        contraintes[cpt] = it->makeArray();
-        it++;
-        cpt++;
-    }
-
-    return contraintes;
 }
 
 int Balles::tailleTab(){
