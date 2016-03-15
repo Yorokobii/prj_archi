@@ -37,6 +37,10 @@ bool Balle::avancer(float zPlan){
         glEnable(GL_TEXTURE_2D);
     glPopMatrix();
 
+    if(PositionBalle.z == zPlan + rayonDeform)
+        std::cerr<<"ENORME"<<std::endl;
+
+
     if(PositionBalle.z <= zPlan*2) return true;
     else return false;
 }

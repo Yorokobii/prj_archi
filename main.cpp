@@ -60,9 +60,9 @@ Vec3 GetMouseVec(int x, int y){
 	winY = (float)y;
 	glReadPixels( x, int(winY), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &winZ);
 
-	gluUnProject( winX, winY, win Z, modelview, projection,viewport, &posX, &posY, &posZ);
+	gluUnProject( winX, winY, winZ, modelview, projection,viewport, &posX, &posY, &posZ);
 
-	Vec3 vec = {posX, posY, posZ};
+	Vec3 vec = {(float)posX, (float)posY, (float)posZ};
 
 	return vec;
 }
