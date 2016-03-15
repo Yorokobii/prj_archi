@@ -58,9 +58,15 @@ Vec3 GetMouseVec(int x, int y){
 	winY = (float)y;
 	glReadPixels( x, int(winY), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &winZ);
 
-	gluUnProject( winX, winY, win Z, modelview, projection,viewport, &posX, &posY, &posZ);
+	gluUnProject( winX, winY, winZ, modelview, projection,viewport, &posX, &posY, &posZ);
 
-	Vec3 vec = {posX, posY, posZ};
+	Vec3 vec = {(float)posX, -(float)posY, (float)(posZ + 200)};
+
+	vec.x *= 0.0003;
+	vec.y *= 0.0003;
+	vec.z *= 0.0003;
+
+	std::cerr<< vec.x <<" "<< vec.y<<" "<< vec.z <<std::endl;
 
 	return vec;
 }
@@ -142,8 +148,6 @@ void RenderScene(void) {
 	glRotatef(angle_x,1,0,0);
 	glRotatef(angle_y,0,1,0);
 
-	//std::cerr << balles.tailleTab() << std::endl;
-
 	//transmission des valeurs de la structure Contrainte
 	/*glUniform3fv(where_centre, 1, maContrainte.centre);
 	glUniform3fv(where_vecteur, 1, maContrainte.vecteur);
@@ -183,11 +187,12 @@ GLvoid callback_Mouse(int button, int state, int x, int y) {
 		float yf = y - windowHeight/2;
 		float zf = - zPlan * Ratio;
 		xf *= Ratio;
-		yf *= Ratio;*/		
+		yf *= Ratio;*/
 
 		Vec3 vecDef = {0.0, 0.0, -1.0};
 		Vec3 vecBalle = GetMouseVec(x,y);
 
+		std::cerr << balles.tailleTab() << std::endl;
 		balles.lancer(vecDef, vecBalle);
 	}
 }
