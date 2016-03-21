@@ -23,6 +23,7 @@ GLSL_Program* mes_shaders;
 GLint locCDeform;
 GLint locVDeform;
 GLint locRDeform;
+GLint locBool;
 
 Texture mRaffin;
 Objet monObjet;
@@ -33,6 +34,8 @@ int mouseY = 0;
 
 float zPlan = -200.0;
 float Ratio = 0.0003f;
+
+float Bool = 0.0f;
 
 float angle_x = 0.0f;
 float angle_y = 0.0f;
@@ -127,12 +130,15 @@ void RenderScene(void) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearColor(0.0,0.0,0.0,1.0);
 
+	glUniform1f(locBool, Bool);
+
 	//Modification de la matrice de projection
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity(); //remise à 0 (identité)
 	gluPerspective(90.0, windowRatio, 0.1, 206); //définition d'une perspective (angle d'ouverture 130°,rapport L/H=1.0, near=0.1, far=100)
 
-	balles.avancer(monObjet, zPlan, locCDeform, locVDeform, locRDeform);
+	//glColor3f(1.0, 1.0, 1.0);
+	balles.avancer(monObjet, zPlan, locCDeform, locVDeform, locRDeform, Bool);
     glTranslatef(0.0,0.0,zPlan);
 	glRotatef(180,0.0,0.0,1.0);
 
@@ -145,15 +151,6 @@ void RenderScene(void) {
 	//cf le callback_clavier
 	glRotatef(angle_x,1,0,0);
 	glRotatef(angle_y,0,1,0);
-
-	//transmission des valeurs de la structure Contrainte
-	/*glUniform3fv(where_centre, 1, maContrainte.centre);
-	glUniform3fv(where_vecteur, 1, maContrainte.vecteur);
-	glUniform1f(where_rayon, maContrainte.rayon);*/
-	/*contr = balles.makeArray();
-	glUniform1f(tailleTab, balles.tailleTab());
-	glUniform3fv(loc, balles.tailleTab(), contr->vecD);
-	glUniform3fv(loc, balles.tailleTab(), contr->vecC); */
 
 	//Parce qu'on avait pas vu encore les dsiplay List...
 	glCallList(monObjet.id);
@@ -180,12 +177,6 @@ switch (key) {
 GLvoid callback_Mouse(int button, int state, int x, int y) {
 	if (state == GLUT_DOWN && button == GLUT_LEFT_BUTTON) {
 		mouseX = x; mouseY = y;
-/*
-		float xf = x - windowWidth/2;
-		float yf = y - windowHeight/2;
-		float zf = - zPlan * Ratio;
-		xf *= Ratio;
-		yf *= Ratio;*/
 
 		Vec3 vecDef = {0.0, 0.0, -1.0};
 		Vec3 vecBalle = GetMouseVec(x,y);
@@ -225,6 +216,7 @@ void SetShaders(void) {
 	locCDeform = glGetUniformLocation(mes_shaders->idprogram, "vecCDeform");
 	locVDeform = glGetUniformLocation(mes_shaders->idprogram, "vecVDeform");
 	locRDeform = glGetUniformLocation(mes_shaders->idprogram, "rayonDeform");
+	locBool = glGetUniformLocation(mes_shaders->idprogram, "BoolVert");
 
 	PrintProgramInfo(mes_shaders -> idprogram);
 }

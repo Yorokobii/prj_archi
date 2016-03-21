@@ -27,7 +27,7 @@ private:
 public:
     Balle(Vec3, Vec3, float =1.0);
     inline ~Balle(){ }
-    bool avancer(Objet& objet, float, GLint, GLint, GLint );
+    bool avancer(Objet& objet, float, GLint, GLint, GLint, float& _bool );
     Vec3 couleur;
 
     inline const Vec3& getVDeform() const { return vecteurDeform; }
