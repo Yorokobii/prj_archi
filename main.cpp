@@ -20,6 +20,7 @@ using namespace std;
 #define ECHAP 27
 GLSL_Program* basic_shader;
 GLSL_Program* raffin_shader;
+GLSL_Program* night_shader;
 
 GLint locCDeform;
 GLint locVDeform;
@@ -164,7 +165,7 @@ void RenderScene(void) {
 	raffin_shader->Deactivate();
 	balles.avancer(monObjet, zPlan, locCDeform, locVDeform, locRDeform);
 	raffin_shader->Activate();
-    
+
     glTranslatef(0.0,0.0,zPlan);
 	glRotatef(180,0.0,0.0,1.0);
 
@@ -195,6 +196,11 @@ switch (key) {
 		glutLeaveMainLoop(); //retour au main()
 		break;
 
+	case 'n':
+		// Passer en mode de nuit
+		std::cerr <<"Mode nuit activé"<<std::endl;
+	break;
+
 	default:
 		cerr << "La touche " << int(key) << " est non active." << endl;
 		cerr << "\t -> Z S Q D pour faire tourner l'objet" << endl;
@@ -213,49 +219,66 @@ GLvoid callback_Mouse(int button, int state, int x, int y) {
 }
 
 void SetShaders(void) {
-
+	// Déclaration :
+	// Vertex :
 	GLSL_VS basic_vert;
-	GLSL_FS basic_frag;
+	GLSL_VS raffin_vert;
+	GLSL_VS night_vert;
 
+	// Fragment :
+	GLSL_FS basic_frag
+	GLSL_FS raffin_frag;
+	GLSL_FS night_frag;
+
+	//____
+	// Lecture des fichiers
 	basic_vert.ReadSource("basic.vert");
-	basic_vert.Compile();
-
 	basic_frag.ReadSource("basic.frag");
-	basic_frag.Compile();
+	raffin_vert.ReadSource("raffin.vert");
+	raffin_frag.ReadSource("raffin.frag");
+	night_vert.ReadSource("night.vert");
+	night_frag.ReadSource("night.frag");
 
+	// Compilation :
+	basic_vert.Compile();
+	basic_frag.Compile();
+	raffin_vert.Compile();
+	raffin_frag.Compile();
+	night_vert.Compile();
+	night_frag.Compile();
+
+	// Info Shader :
 	PrintShaderInfo(basic_vert.idvs);
 	PrintShaderInfo(basic_frag.idfs);
-	basic_shader = new GLSL_Program();
-
-	basic_shader -> Use_VertexShader(basic_vert);
-	basic_shader -> Use_FragmentShader(basic_frag);
-
-	basic_shader -> Link_Shaders();
-	basic_shader -> Activate();
-
-	GLSL_VS raffin_vert;
-	GLSL_FS raffin_frag;
-
-	raffin_vert.ReadSource("raffin.vert");
-	raffin_vert.Compile();
-
-	raffin_frag.ReadSource("raffin.frag");
-	raffin_frag.Compile();
-
 	PrintShaderInfo(raffin_vert.idvs);
 	PrintShaderInfo(raffin_frag.idfs);
-	raffin_shader = new GLSL_Program();
+	PrintShaderInfo(night_vert.idfs);
+	PrintShaderInfo(night_frag.idfs);
 
+	//_____
+	// Utilisation :
+	basic_shader = new GLSL_Program();
+	basic_shader -> Use_VertexShader(basic_vert);
+	basic_shader -> Use_FragmentShader(basic_frag);
+	basic_shader -> Link_Shaders();
+	basic_shader -> Activate(); // Activation de ce basic_shader.
+
+	raffin_shader = new GLSL_Program();
 	raffin_shader -> Use_VertexShader(raffin_vert);
 	raffin_shader -> Use_FragmentShader(raffin_frag);
-
 	raffin_shader -> Link_Shaders();
 
+	
+
+	//____
+	// Définition des variables à viser dans le GPU
 	locDep = glGetUniformLocation(raffin_shader->idprogram, "VecDeplac");
 	locCDeform = glGetUniformLocation(raffin_shader->idprogram, "vecCDeform");
 	locVDeform = glGetUniformLocation(raffin_shader->idprogram, "vecVDeform");
 	locRDeform = glGetUniformLocation(raffin_shader->idprogram, "rayonDeform");
 
+	//___
+	// Info Program :
 	PrintProgramInfo(raffin_shader -> idprogram);
 	PrintProgramInfo(basic_shader -> idprogram);
 }
