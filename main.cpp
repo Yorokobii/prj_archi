@@ -18,7 +18,8 @@
 using namespace std;
 
 #define ECHAP 27
-GLSL_Program* mes_shaders;
+GLSL_Program* basic_shader;
+GLSL_Program* raffin_shader;
 
 GLint locCDeform;
 GLint locVDeform;
@@ -45,6 +46,26 @@ float windowRatio = 1.0f;
 int windowHeight = 500;
 int windowWidth = 500;
 float angle = 0.0f;
+
+GLint locDep;
+float VecDep[2] = {0.0, 0.0};
+
+void Deplacement(){
+
+	float tempX = (float)((rand()%3)-1);
+	float tempY = (float)((rand()%3)-1);
+
+	monObjet.min.x -= tempX;
+	monObjet.min.y -= tempY; // soustrait a cause du rotate de l'image
+
+	monObjet.max.x -= tempX;
+	monObjet.max.y -= tempY;
+
+	VecDep[0] += tempX;
+	VecDep[1] += tempY;
+
+	glUniform2fv(locDep, 1, VecDep);
+}
 
 Vec3 GetMouseVec(int x, int y){
 	GLint viewport[4];
@@ -76,9 +97,7 @@ void GeomInit(void) {
 	srand(time(NULL));
 	unsigned int nfaces;
 
-	//monObjet.charge_OFF((const char*) "100x100points.off");
 	monObjet.charge_OFFUV((const char*) "100x100pointsUV.off");
-	//monObjet.affiche();
 
 	monObjet.id=glGenLists(1);
 
@@ -122,15 +141,15 @@ static GLvoid callback_Window(GLsizei width, GLsizei height)
 }
 
 void callback_Idle() {
-	angle += 0.001f;
 	glutPostRedisplay();
 }
 
 void RenderScene(void) {
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearColor(0.0,0.0,0.0,1.0);
 
-	glUniform1f(locBool, Bool);
+	//glUniform1f(locBool, Bool);
 
 	//Modification de la matrice de projection
 	glMatrixMode(GL_PROJECTION);
@@ -138,7 +157,10 @@ void RenderScene(void) {
 	gluPerspective(90.0, windowRatio, 0.1, 206); //définition d'une perspective (angle d'ouverture 130°,rapport L/H=1.0, near=0.1, far=100)
 
 	//glColor3f(1.0, 1.0, 1.0);
+	raffin_shader->Deactivate();
 	balles.avancer(monObjet, zPlan, locCDeform, locVDeform, locRDeform, Bool);
+	raffin_shader->Activate();
+    
     glTranslatef(0.0,0.0,zPlan);
 	glRotatef(180,0.0,0.0,1.0);
 
@@ -152,6 +174,8 @@ void RenderScene(void) {
 	glRotatef(angle_x,1,0,0);
 	glRotatef(angle_y,0,1,0);
 
+	Deplacement();
+
 	//Parce qu'on avait pas vu encore les dsiplay List...
 	glCallList(monObjet.id);
 
@@ -162,7 +186,7 @@ void callback_Keyboard(unsigned char key, int x, int y) {
 switch (key) {
 
 	case ECHAP:
-		delete mes_shaders;
+		delete basic_shader;
 		cout << "callback_Keyboard - " << "sortie de la boucle de rendu" << endl;
 		glutLeaveMainLoop(); //retour au main()
 		break;
@@ -184,41 +208,54 @@ GLvoid callback_Mouse(int button, int state, int x, int y) {
 	}
 }
 
-
-
 void SetShaders(void) {
-	GLSL_VS le_vertex_shader;
-	GLSL_FS le_fragment_shader;
 
-	le_vertex_shader.ReadSource("vert.vert");
-	le_vertex_shader.Compile();
+	GLSL_VS basic_vert;
+	GLSL_FS basic_frag;
 
-	le_fragment_shader.ReadSource("frag.frag");
-	le_fragment_shader.Compile();
+	basic_vert.ReadSource("basic.vert");
+	basic_vert.Compile();
 
-	PrintShaderInfo(le_vertex_shader.idvs);
-	PrintShaderInfo(le_fragment_shader.idfs);
-	mes_shaders = new GLSL_Program();
+	basic_frag.ReadSource("basic.frag");
+	basic_frag.Compile();
 
-	mes_shaders -> Use_VertexShader(le_vertex_shader);
-	mes_shaders -> Use_FragmentShader(le_fragment_shader);
+	PrintShaderInfo(basic_vert.idvs);
+	PrintShaderInfo(basic_frag.idfs);
+	basic_shader = new GLSL_Program();
 
-	mes_shaders -> Link_Shaders();
-	mes_shaders -> Activate();
+	basic_shader -> Use_VertexShader(basic_vert);
+	basic_shader -> Use_FragmentShader(basic_frag);
 
-	//on aura besoin de localiser ces données dans la mémoire de la carte graphique
-	//(pour pouvoir les modifier)
-	//loc = glGetUniformLocation(mes_shaders -> idprogram, "vcontraintes");
-	//tailleTab = glGetUniformLocation(mes_shaders -> idprogram, "lenght");
-	/*where_vecteur = glGetUniformLocation(mes_shaders -> idprogram, "Uv3vecteur_deformation");
-	where_rayon = glGetUniformLocation(mes_shaders -> idprogram, "Ufrayon_deformation");*/
+	basic_shader -> Link_Shaders();
+	basic_shader -> Activate();
 
-	locCDeform = glGetUniformLocation(mes_shaders->idprogram, "vecCDeform");
-	locVDeform = glGetUniformLocation(mes_shaders->idprogram, "vecVDeform");
-	locRDeform = glGetUniformLocation(mes_shaders->idprogram, "rayonDeform");
-	locBool = glGetUniformLocation(mes_shaders->idprogram, "BoolVert");
+	/*locCDeform = glGetUniformLocation(basic_shader->idprogram, "vecCDeform");
+	locVDeform = glGetUniformLocation(basic_shader->idprogram, "vecVDeform");
+	locRDeform = glGetUniformLocation(basic_shader->idprogram, "rayonDeform");
+	locBool = glGetUniformLocation(basic_shader->idprogram, "BoolVert");*/
 
-	PrintProgramInfo(mes_shaders -> idprogram);
+	GLSL_VS raffin_vert;
+	GLSL_FS raffin_frag;
+
+	raffin_vert.ReadSource("raffin.vert");
+	raffin_vert.Compile();
+
+	raffin_frag.ReadSource("raffin.frag");
+	raffin_frag.Compile();
+
+	PrintShaderInfo(raffin_vert.idvs);
+	PrintShaderInfo(raffin_frag.idfs);
+	raffin_shader = new GLSL_Program();
+
+	raffin_shader -> Use_VertexShader(raffin_vert);
+	raffin_shader -> Use_FragmentShader(raffin_frag);
+
+	raffin_shader -> Link_Shaders();
+
+	locDep = glGetUniformLocation(raffin_shader->idprogram, "VecDeplac");
+
+	PrintProgramInfo(raffin_shader -> idprogram);
+	PrintProgramInfo(basic_shader -> idprogram);
 }
 
 
@@ -306,7 +343,7 @@ int main(int argc, char **argv) {
 
 	glutMainLoop();
 
-	delete mes_shaders;
+	delete basic_shader;
 
 	return (EXIT_SUCCESS);
 }

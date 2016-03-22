@@ -37,6 +37,6 @@ void GLSL_Program::Activate() {
 }
 
 void GLSL_Program::Deactivate() {
-	//rien pour l'instant
+	glUseProgram(0);
 }
 
