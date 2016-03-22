@@ -24,7 +24,6 @@ GLSL_Program* raffin_shader;
 GLint locCDeform;
 GLint locVDeform;
 GLint locRDeform;
-GLint locBool;
 
 Texture mRaffin;
 Objet monObjet;
@@ -35,8 +34,6 @@ int mouseY = 0;
 
 float zPlan = -200.0;
 float Ratio = 0.0003f;
-
-float Bool = 0.0f;
 
 float angle_x = 0.0f;
 float angle_y = 0.0f;
@@ -49,20 +46,29 @@ float angle = 0.0f;
 
 GLint locDep;
 float VecDep[2] = {0.0, 0.0};
+float depX = 0.1f;
+float depY = 0.2f;
 
 void Deplacement(){
 
-	float tempX = (float)((rand()%3)-1);
-	float tempY = (float)((rand()%3)-1);
+	if(monObjet.max.x + (monObjet.max.x - monObjet.min.x)/2>windowWidth/2-1)
+		depX = -depX;
+	if(monObjet.min.x - (monObjet.max.x - monObjet.min.x)/2<-(windowWidth/2-1))
+		depX = -depX;
 
-	monObjet.min.x -= tempX;
-	monObjet.min.y -= tempY; // soustrait a cause du rotate de l'image
+	if(monObjet.max.y + (monObjet.max.y - monObjet.min.y)/2>windowHeight/2-1)
+		depY = -depY;
+	if(monObjet.min.y - (monObjet.max.y - monObjet.min.y)/2<-(windowHeight/2-1))
+		depY = -depY;
 
-	monObjet.max.x -= tempX;
-	monObjet.max.y -= tempY;
+	monObjet.min.x -= depX;
+	monObjet.min.y -= depY;
 
-	VecDep[0] += tempX;
-	VecDep[1] += tempY;
+	monObjet.max.x -= depX;
+	monObjet.max.y -= depY;
+
+	VecDep[0] += depX;
+	VecDep[1] += depY;
 
 	glUniform2fv(locDep, 1, VecDep);
 }
@@ -86,9 +92,9 @@ Vec3 GetMouseVec(int x, int y){
 
 	Vec3 vec = {(float)posX, -(float)posY, (float)(posZ + 200)};
 
-	vec.x *= 0.0003;
-	vec.y *= 0.0003;
-	vec.z *= 0.0003;
+	vec.x *= 0.003;
+	vec.y *= 0.003; // régule la vitesse
+	vec.z *= 0.003;
 
 	return vec;
 }
@@ -149,8 +155,6 @@ void RenderScene(void) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearColor(0.0,0.0,0.0,1.0);
 
-	//glUniform1f(locBool, Bool);
-
 	//Modification de la matrice de projection
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity(); //remise à 0 (identité)
@@ -158,7 +162,7 @@ void RenderScene(void) {
 
 	//glColor3f(1.0, 1.0, 1.0);
 	raffin_shader->Deactivate();
-	balles.avancer(monObjet, zPlan, locCDeform, locVDeform, locRDeform, Bool);
+	balles.avancer(monObjet, zPlan, locCDeform, locVDeform, locRDeform);
 	raffin_shader->Activate();
     
     glTranslatef(0.0,0.0,zPlan);
@@ -174,7 +178,7 @@ void RenderScene(void) {
 	glRotatef(angle_x,1,0,0);
 	glRotatef(angle_y,0,1,0);
 
-	Deplacement();
+	//Deplacement();
 
 	//Parce qu'on avait pas vu encore les dsiplay List...
 	glCallList(monObjet.id);
@@ -229,11 +233,6 @@ void SetShaders(void) {
 	basic_shader -> Link_Shaders();
 	basic_shader -> Activate();
 
-	/*locCDeform = glGetUniformLocation(basic_shader->idprogram, "vecCDeform");
-	locVDeform = glGetUniformLocation(basic_shader->idprogram, "vecVDeform");
-	locRDeform = glGetUniformLocation(basic_shader->idprogram, "rayonDeform");
-	locBool = glGetUniformLocation(basic_shader->idprogram, "BoolVert");*/
-
 	GLSL_VS raffin_vert;
 	GLSL_FS raffin_frag;
 
@@ -253,6 +252,9 @@ void SetShaders(void) {
 	raffin_shader -> Link_Shaders();
 
 	locDep = glGetUniformLocation(raffin_shader->idprogram, "VecDeplac");
+	locCDeform = glGetUniformLocation(raffin_shader->idprogram, "vecCDeform");
+	locVDeform = glGetUniformLocation(raffin_shader->idprogram, "vecVDeform");
+	locRDeform = glGetUniformLocation(raffin_shader->idprogram, "rayonDeform");
 
 	PrintProgramInfo(raffin_shader -> idprogram);
 	PrintProgramInfo(basic_shader -> idprogram);

@@ -19,7 +19,7 @@ Balle::Balle(Vec3 _vecteurDeform, Vec3 _vitesseBalle, float _rayonDeform)
     couleur.z = (float(rand()%100))/100.0;
 }
 
-bool Balle::avancer(Objet& objet, float zPlan, GLint locCDeform, GLint locVDeform, GLint locRDeform, float& _bool){
+bool Balle::avancer(Objet& objet, float zPlan, GLint locCDeform, GLint locVDeform, GLint locRDeform){
 
     PositionBalle.x -= vitesseBalle.x;
     PositionBalle.y -= vitesseBalle.y;
@@ -41,7 +41,6 @@ bool Balle::avancer(Objet& objet, float zPlan, GLint locCDeform, GLint locVDefor
         if( PositionBalle.x >= (objet.min.x)-rayonDeform && PositionBalle.x <= (objet.max.x)+rayonDeform ){
             if( PositionBalle.y >= (objet.min.y)-rayonDeform && PositionBalle.y <= (objet.max.y)+rayonDeform ){
                 std::cerr<<"Mr. Raffin est touche"<<std::endl;
-                _bool = 1.0;
 
                 tabCD[0] = centreDeform.x;
                 tabCD[1] = centreDeform.y;
@@ -55,7 +54,19 @@ bool Balle::avancer(Objet& objet, float zPlan, GLint locCDeform, GLint locVDefor
             	glUniform3fv(locVDeform, 1, tabVD);
                 glUniform1f(locRDeform, rayonDeform);
             }
-            else _bool = 0.0;
+            else{
+                tabCD[0] = 0.0;
+                tabCD[1] = 0.0;
+                tabCD[2] = 0.0;
+
+                tabVD[0] = 0.0;
+                tabVD[1] = 0.0;
+                tabVD[2] = 0.0;
+
+                glUniform3fv(locCDeform, 1, tabCD);
+                glUniform3fv(locVDeform, 1, tabVD);
+                glUniform1f(locRDeform, rayonDeform);
+            }
         }
 
 
