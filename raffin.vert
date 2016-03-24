@@ -10,6 +10,7 @@ varying float VChange;
 void main(void){
     vec4 point = gl_Vertex;
 
+    point.xy += Vibration.xy;
     point.xy += VecDeplac.xy;
 
     float dx = distance(vecCDeform.x, point.x);	//distance est une fonction de GLSL (cf. mémo sur le site)
@@ -22,7 +23,7 @@ void main(void){
 	else
 		VChange = 0.0;
 
-    point.xy += Vibration;
+    //point.xy += Vibration;
     //point.xy += vec2(150.0,78.0);
 
     gl_Position = gl_ModelViewProjectionMatrix * point;

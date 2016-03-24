@@ -181,7 +181,8 @@ void RenderScene(void) {
 	if(nightModeON) night_shader->Activate();
 	else raffin_shader->Activate();
 
-	//Deplacement();
+	//_____________________
+	Deplacement();
 
     glTranslatef(0.0,0.0,zPlan);
 	glRotatef(180,0.0,0.0,1.0);
