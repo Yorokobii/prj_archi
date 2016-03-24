@@ -18,14 +18,18 @@
 using namespace std;
 
 #define ECHAP 27
+
+// Déclaration des GLSL_Program
 GLSL_Program* basic_shader;
 GLSL_Program* raffin_shader;
 GLSL_Program* night_shader;
 
+// Variables du GPU
 GLint locCDeform;
 GLint locVDeform;
 GLint locRDeform;
 
+// Autres variables :
 Texture mRaffin;
 Objet monObjet;
 Balles balles;
@@ -40,7 +44,7 @@ float angle_x = 0.0f;
 float angle_y = 0.0f;
 
 bool nightModeON = true;
-float cpt = 0.0; // Compteur de nombre de balles envoyées
+float cpt = 0.0; // Compteur du nombre de balles envoyées
 
 //variables pour la gestion des paramètres de la fenêtre
 float windowRatio = 1.0f;
@@ -53,7 +57,7 @@ float VecDep[2] = {0.0, 0.0};
 float depX = 0.1f;
 float depY = 0.2f;
 
-
+// Fonction s'occupant du déplacement de la texture
 void Deplacement(){
 
 	if(monObjet.max.x + (monObjet.max.x - monObjet.min.x)/2>windowWidth/2-1)
@@ -177,6 +181,8 @@ void RenderScene(void) {
 	if(nightModeON) raffin_shader->Activate();
 	else night_shader->Activate();
 
+	Deplacement();
+
     glTranslatef(0.0,0.0,zPlan);
 	glRotatef(180,0.0,0.0,1.0);
 
@@ -190,7 +196,7 @@ void RenderScene(void) {
 	glRotatef(angle_x,1,0,0);
 	glRotatef(angle_y,0,1,0);
 
-	Deplacement();
+
 
 	//Parce qu'on avait pas vu encore les dsiplay List...
 	glCallList(monObjet.id);
@@ -230,8 +236,7 @@ GLvoid callback_Mouse(int button, int state, int x, int y) {
 		cpt++;
 
 		float aim = 0.0f;
-		//if( balles.cpt != 0)
-		 aim = balles.cpt / cpt ;
+		aim = cpt /balles.cpt ;
 		std::cerr <<"Precision : "<< aim*100 <<" %"<<std::endl;
 	}
 }
@@ -254,7 +259,7 @@ void SetShaders(void) {
 	basic_frag.ReadSource("basic.frag");
 	raffin_vert.ReadSource("raffin.vert");
 	raffin_frag.ReadSource("raffin.frag");
-	night_vert.ReadSource("raffin.vert");
+	night_vert.ReadSource("raffin.vert"); // On garde le raffin.vert même pour le mode nuit (atm)
 	night_frag.ReadSource("nuit.frag");
 
 	// Compilation :
