@@ -23,11 +23,12 @@ private:
 
     float tabCD[3];
     float tabVD[3];
+    float tabVibration[2];
 
 public:
     Balle(Vec3, Vec3, float =1.0);
     inline ~Balle(){ }
-    bool avancer(Objet& objet, float, GLint, GLint, GLint, float& );
+    bool avancer(Objet& objet, float, GLint, GLint, GLint, GLint );
     Vec3 couleur;
 
     inline const Vec3& getVDeform() const { return vecteurDeform; }

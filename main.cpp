@@ -28,6 +28,7 @@ GLSL_Program* night_shader;
 GLint locCDeform;
 GLint locVDeform;
 GLint locRDeform;
+GLint locVibration;
 
 // Autres variables :
 Texture mRaffin;
@@ -43,8 +44,7 @@ float Ratio = 0.0003f;
 float angle_x = 0.0f;
 float angle_y = 0.0f;
 
-bool nightModeON = true;
-float cpt = 0.0; // Compteur du nombre de balles envoyées
+bool nightModeON = false;
 
 //variables pour la gestion des paramètres de la fenêtre
 float windowRatio = 1.0f;
@@ -173,15 +173,15 @@ void RenderScene(void) {
 	//night_shader->Activate();
 	//glColor3f(1.0, 1.0, 1.0);
 
-	if(nightModeON) raffin_shader->Deactivate();
-	else night_shader->Deactivate();
+	if(nightModeON) night_shader->Deactivate();
+	else raffin_shader->Deactivate();
 
-	balles.avancer(monObjet, zPlan, locCDeform, locVDeform, locRDeform);
+	balles.avancer(monObjet, zPlan, locCDeform, locVDeform, locRDeform, locVibration);
 
-	if(nightModeON) raffin_shader->Activate();
-	else night_shader->Activate();
+	if(nightModeON) night_shader->Activate();
+	else raffin_shader->Activate();
 
-	Deplacement();
+	//Deplacement();
 
     glTranslatef(0.0,0.0,zPlan);
 	glRotatef(180,0.0,0.0,1.0);
@@ -221,7 +221,6 @@ switch (key) {
 
 	default:
 		cerr << "La touche " << int(key) << " est non active." << endl;
-		cerr << "\t -> Z S Q D pour faire tourner l'objet" << endl;
 		break;
 	}
 }
@@ -233,11 +232,6 @@ GLvoid callback_Mouse(int button, int state, int x, int y) {
 		Vec3 vecDef = {0.0, 0.0, -1.0};
 		Vec3 vecBalle = GetMouseVec(x,y);
 		balles.lancer(vecDef, vecBalle);
-		cpt++;
-
-		float aim = 0.0f;
-		aim = cpt /balles.cpt ;
-		std::cerr <<"Precision : "<< aim*100 <<" %"<<std::endl;
 	}
 }
 
@@ -302,6 +296,7 @@ void SetShaders(void) {
 	locCDeform = glGetUniformLocation(raffin_shader->idprogram, "vecCDeform");
 	locVDeform = glGetUniformLocation(raffin_shader->idprogram, "vecVDeform");
 	locRDeform = glGetUniformLocation(raffin_shader->idprogram, "rayonDeform");
+	locVibration = glGetUniformLocation(raffin_shader->idprogram, "Vibration");
 
 	//___
 	// Info Program :
