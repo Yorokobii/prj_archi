@@ -19,8 +19,7 @@ Balle::Balle(Vec3 _vecteurDeform, Vec3 _vitesseBalle, float _rayonDeform)
     couleur.z = (float(rand()%100))/100.0;
 }
 
-bool Balle::avancer(Objet& objet, float zPlan, GLint locCDeform, GLint locVDeform, GLint locRDeform){
-
+bool Balle::avancer(Objet& objet, float zPlan, GLint locCDeform, GLint locVDeform, GLint locRDeform, float& compteur){
     PositionBalle.x -= vitesseBalle.x;
     PositionBalle.y -= vitesseBalle.y;
     PositionBalle.z -= vitesseBalle.z;
@@ -40,7 +39,8 @@ bool Balle::avancer(Objet& objet, float zPlan, GLint locCDeform, GLint locVDefor
     if(PositionBalle.z <= (zPlan + rayonDeform)){
         if( PositionBalle.x >= (objet.min.x)-rayonDeform && PositionBalle.x <= (objet.max.x)+rayonDeform ){
             if( PositionBalle.y >= (objet.min.y)-rayonDeform && PositionBalle.y <= (objet.max.y)+rayonDeform ){
-                std::cerr<<"Mr. Raffin est touche"<<std::endl;
+                compteur++;
+                //std::cerr<<"Mr. Raffin est touche : "<< compteur <<std::endl;
 
                 tabCD[0] = centreDeform.x;
                 tabCD[1] = centreDeform.y;

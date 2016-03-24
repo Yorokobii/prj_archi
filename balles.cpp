@@ -10,10 +10,11 @@ void Balles::avancer(Objet& objet, float zPlan, GLint locCDeform, GLint locVDefo
 
     it = balles.begin();
     while(it != balles.end()){
-        if(it->avancer(objet, zPlan, locCDeform, locVDeform, locRDeform))
+        if(it->avancer(objet, zPlan, locCDeform, locVDeform, locRDeform, cpt))
             it = balles.erase(it);
         else it++;
     }
+
 }
 
 int Balles::tailleTab(){

@@ -39,6 +39,9 @@ float Ratio = 0.0003f;
 float angle_x = 0.0f;
 float angle_y = 0.0f;
 
+bool nightModeON = true;
+float cpt = 0.0; // Compteur de nombre de balles envoyées
+
 //variables pour la gestion des paramètres de la fenêtre
 float windowRatio = 1.0f;
 int windowHeight = 500;
@@ -49,6 +52,7 @@ GLint locDep;
 float VecDep[2] = {0.0, 0.0};
 float depX = 0.1f;
 float depY = 0.2f;
+
 
 void Deplacement(){
 
@@ -159,12 +163,19 @@ void RenderScene(void) {
 	//Modification de la matrice de projection
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity(); //remise à 0 (identité)
+
 	gluPerspective(90.0, windowRatio, 0.1, 206); //définition d'une perspective (angle d'ouverture 130°,rapport L/H=1.0, near=0.1, far=100)
 
+	//night_shader->Activate();
 	//glColor3f(1.0, 1.0, 1.0);
-	raffin_shader->Deactivate();
+
+	if(nightModeON) raffin_shader->Deactivate();
+	else night_shader->Deactivate();
+
 	balles.avancer(monObjet, zPlan, locCDeform, locVDeform, locRDeform);
-	raffin_shader->Activate();
+
+	if(nightModeON) raffin_shader->Activate();
+	else night_shader->Activate();
 
     glTranslatef(0.0,0.0,zPlan);
 	glRotatef(180,0.0,0.0,1.0);
@@ -179,10 +190,11 @@ void RenderScene(void) {
 	glRotatef(angle_x,1,0,0);
 	glRotatef(angle_y,0,1,0);
 
-	//Deplacement();
+	Deplacement();
 
 	//Parce qu'on avait pas vu encore les dsiplay List...
 	glCallList(monObjet.id);
+
 
 	glutSwapBuffers();
 }
@@ -197,8 +209,8 @@ switch (key) {
 		break;
 
 	case 'n':
-		// Passer en mode de nuit
-		std::cerr <<"Mode nuit activé"<<std::endl;
+		if(nightModeON) nightModeON = false;
+		else nightModeON = true;
 	break;
 
 	default:
@@ -215,6 +227,12 @@ GLvoid callback_Mouse(int button, int state, int x, int y) {
 		Vec3 vecDef = {0.0, 0.0, -1.0};
 		Vec3 vecBalle = GetMouseVec(x,y);
 		balles.lancer(vecDef, vecBalle);
+		cpt++;
+
+		float aim = 0.0f;
+		//if( balles.cpt != 0)
+		 aim = balles.cpt / cpt ;
+		std::cerr <<"Precision : "<< aim*100 <<" %"<<std::endl;
 	}
 }
 
@@ -226,7 +244,7 @@ void SetShaders(void) {
 	GLSL_VS night_vert;
 
 	// Fragment :
-	GLSL_FS basic_frag
+	GLSL_FS basic_frag;
 	GLSL_FS raffin_frag;
 	GLSL_FS night_frag;
 
@@ -236,8 +254,8 @@ void SetShaders(void) {
 	basic_frag.ReadSource("basic.frag");
 	raffin_vert.ReadSource("raffin.vert");
 	raffin_frag.ReadSource("raffin.frag");
-	night_vert.ReadSource("night.vert");
-	night_frag.ReadSource("night.frag");
+	night_vert.ReadSource("raffin.vert");
+	night_frag.ReadSource("nuit.frag");
 
 	// Compilation :
 	basic_vert.Compile();
@@ -252,7 +270,7 @@ void SetShaders(void) {
 	PrintShaderInfo(basic_frag.idfs);
 	PrintShaderInfo(raffin_vert.idvs);
 	PrintShaderInfo(raffin_frag.idfs);
-	PrintShaderInfo(night_vert.idfs);
+	PrintShaderInfo(night_vert.idvs);
 	PrintShaderInfo(night_frag.idfs);
 
 	//_____
@@ -268,7 +286,10 @@ void SetShaders(void) {
 	raffin_shader -> Use_FragmentShader(raffin_frag);
 	raffin_shader -> Link_Shaders();
 
-	
+	night_shader = new GLSL_Program();
+	night_shader -> Use_VertexShader(night_vert);
+	night_shader -> Use_FragmentShader(night_frag);
+	night_shader -> Link_Shaders();
 
 	//____
 	// Définition des variables à viser dans le GPU
