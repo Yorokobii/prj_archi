@@ -53,7 +53,7 @@ bool Balle::avancer(Objet& objet, float zPlan, GLint locCDeform, GLint locVDefor
                 tabVibration[0] = float( (rand()%40)-20) ;
                 tabVibration[1] = float( (rand()%40)-20) ;
 
-                std::cerr << tabVibration[0] <<" _ " << tabVibration[1] << std::endl;
+                std::cerr <<"Vibration : "<< tabVibration[0] <<"  " << tabVibration[1] << std::endl;
             }
             else{
                 tabCD[0] = 0.0;
