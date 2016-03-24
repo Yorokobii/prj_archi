@@ -53,8 +53,9 @@ bool Balle::avancer(Objet& objet, float zPlan, GLint locCDeform, GLint locVDefor
                 tabVibration[0] = float( (rand()%40)-20) ;
                 tabVibration[1] = float( (rand()%40)-20) ;
 
-
-            /*else{
+                std::cerr << tabVibration[0] <<" _ " << tabVibration[1] << std::endl;
+            }
+            else{
                 tabCD[0] = 0.0;
                 tabCD[1] = 0.0;
                 tabCD[2] = 0.0;
@@ -65,15 +66,11 @@ bool Balle::avancer(Objet& objet, float zPlan, GLint locCDeform, GLint locVDefor
 
                 tabVibration[0] = 0.0;
                 tabVibration[1] = 0.0;
-            } */
-
-                std::cerr << tabVibration[0] <<" _ " << tabVibration[1] << std::endl;
-
-            	glUniform3fv(locCDeform, 1, tabCD);
-            	glUniform3fv(locVDeform, 1, tabVD);
-                glUniform1f(locRDeform, rayonDeform);
-                glUniform2fv(locVibration, 1, tabVibration);
             }
+        	glUniform3fv(locCDeform, 1, tabCD);
+        	glUniform3fv(locVDeform, 1, tabVD);
+            glUniform1f(locRDeform, rayonDeform);
+            glUniform2fv(locVibration, 1, tabVibration);
         }
         return true; // La balle peut être effacée de la liste
     }
