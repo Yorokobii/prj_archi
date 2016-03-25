@@ -28,7 +28,7 @@ GLSL_Program* night_shader;
 GLint locCDeform;
 GLint locVDeform;
 GLint locRDeform;
-GLint locVibration;
+GLint locVib;
 
 // Autres variables :
 Texture mRaffin;
@@ -56,6 +56,9 @@ GLint locDep;
 float VecDep[2] = {0.0, 0.0};
 float depX = 0.1f;
 float depY = 0.2f;
+
+float vibration = 0.0;
+float vibrationtab[2] = {0.0, 0.0};
 
 // Fonction s'occupant du déplacement de la texture
 void Deplacement(){
@@ -176,13 +179,25 @@ void RenderScene(void) {
 	if(nightModeON) night_shader->Deactivate();
 	else raffin_shader->Deactivate();
 
-	balles.avancer(monObjet, zPlan, locCDeform, locVDeform, locRDeform, locVibration);
+	balles.avancer(monObjet, vibration, zPlan, locCDeform, locVDeform, locRDeform);
 
 	if(nightModeON) night_shader->Activate();
 	else raffin_shader->Activate();
 
 	//_____________________
 	Deplacement();
+
+	if(vibration>0){
+	    vibrationtab[0] = float( (rand()%20)-10) ;
+	    vibrationtab[1] = float( (rand()%20)-10) ;
+	    vibration--;
+	}
+	else{
+	    vibrationtab[0] = 0.0;
+	    vibrationtab[1] = 0.0;
+	}
+
+    glUniform2fv(locVib, 1, vibrationtab);
 
     glTranslatef(0.0,0.0,zPlan);
 	glRotatef(180,0.0,0.0,1.0);
@@ -293,11 +308,11 @@ void SetShaders(void) {
 
 	//____
 	// Définition des variables à viser dans le GPU
+	locVib = glGetUniformLocation(raffin_shader->idprogram, "VecVib");
 	locDep = glGetUniformLocation(raffin_shader->idprogram, "VecDeplac");
 	locCDeform = glGetUniformLocation(raffin_shader->idprogram, "vecCDeform");
 	locVDeform = glGetUniformLocation(raffin_shader->idprogram, "vecVDeform");
 	locRDeform = glGetUniformLocation(raffin_shader->idprogram, "rayonDeform");
-	locVibration = glGetUniformLocation(raffin_shader->idprogram, "Vibration");
 
 	//___
 	// Info Program :

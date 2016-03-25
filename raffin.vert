@@ -1,9 +1,10 @@
 uniform vec2 VecDeplac;
-uniform vec2 Vibration;
 
 uniform vec3 vecCDeform;
 uniform float rayonDeform;
 uniform vec3 vecVDeform;
+
+uniform vec2 VecVib;
 
 varying float VChange;
 
@@ -22,8 +23,7 @@ void main(void){
 	else
 		VChange = 0.0;
 
-    //point.xy += Vibration;
-    //point.xy += vec2(150.0,78.0);
+    point.xy += VecVib;
 
     gl_Position = gl_ModelViewProjectionMatrix * point;
 

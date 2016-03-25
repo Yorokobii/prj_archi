@@ -19,7 +19,7 @@ Balle::Balle(Vec3 _vecteurDeform, Vec3 _vitesseBalle, float _rayonDeform)
     couleur.z = (float(rand()%100))/100.0;
 }
 
-bool Balle::avancer(Objet& objet, float zPlan, GLint locCDeform, GLint locVDeform, GLint locRDeform, GLint locVibration){
+bool Balle::avancer(Objet& objet, float& vib, float zPlan, GLint locCDeform, GLint locVDeform, GLint locRDeform){
     PositionBalle.x -= vitesseBalle.x;
     PositionBalle.y -= vitesseBalle.y;
     PositionBalle.z -= vitesseBalle.z;
@@ -50,10 +50,7 @@ bool Balle::avancer(Objet& objet, float zPlan, GLint locCDeform, GLint locVDefor
                 tabVD[1] = vecteurDeform.y;
                 tabVD[2] = vecteurDeform.z;
 
-                tabVibration[0] = float( (rand()%40)-20) ;
-                tabVibration[1] = float( (rand()%40)-20) ;
-
-                std::cerr <<"Vibration : "<< tabVibration[0] <<"  " << tabVibration[1] << std::endl;
+                vib = 200.0;
             }
             else{
                 tabCD[0] = 0.0;
@@ -63,14 +60,10 @@ bool Balle::avancer(Objet& objet, float zPlan, GLint locCDeform, GLint locVDefor
                 tabVD[0] = 0.0;
                 tabVD[1] = 0.0;
                 tabVD[2] = 0.0;
-
-                tabVibration[0] = 0.0;
-                tabVibration[1] = 0.0;
             }
         	glUniform3fv(locCDeform, 1, tabCD);
         	glUniform3fv(locVDeform, 1, tabVD);
             glUniform1f(locRDeform, rayonDeform);
-            glUniform2fv(locVibration, 1, tabVibration);
         }
         return true; // La balle peut être effacée de la liste
     }
