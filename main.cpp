@@ -115,12 +115,14 @@ void GeomInit(void) {
 	srand(time(NULL));
 	unsigned int nfaces;
 
-	monObjet.charge_OFFUV((const char*) "100x100pointsUV.off");
-
+	monObjet.charge_OFFUV((const char*) "100x100pointsUV.off"); // Chargement du .OFF avec coordonnées de textures
+	//monObhjet.affiche();
 	monObjet.id=glGenLists(1);
 
 	glNewList(monObjet.id, GL_COMPILE);
 	    glEnable(GL_TEXTURE_2D);
+
+		// UTILISATION DE LA CLASSE TEXTURE ICI :
 		mRaffin.charger((const char *)"texture.jpg");
 		mRaffin.definir_filtrage(GL_LINEAR, GL_LINEAR);
 		mRaffin.definir_bouclage(GL_CLAMP, GL_CLAMP);
@@ -173,9 +175,6 @@ void RenderScene(void) {
 
 	gluPerspective(90.0, windowRatio, 0.1, 206); //définition d'une perspective (angle d'ouverture 130°,rapport L/H=1.0, near=0.1, far=100)
 
-	//night_shader->Activate();
-	//glColor3f(1.0, 1.0, 1.0);
-
 	if(nightModeON) night_shader->Deactivate();
 	else raffin_shader->Deactivate();
 
@@ -187,10 +186,11 @@ void RenderScene(void) {
 	//_____________________
 	Deplacement();
 
+	// Quand une balle touche elle incrémente le compteur de vibration à 200 (fonction avancer, classe Balle)
 	if(vibration>0){
-	    vibrationtab[0] = float( (rand()%20)-10) ;
+	    vibrationtab[0] = float( (rand()%20)-10) ; // On passe un vec2 au vertex shader avec des valeurs randoms pour x et y (entre -10 et 10)
 	    vibrationtab[1] = float( (rand()%20)-10) ;
-	    vibration--;
+	    vibration--; // A chaque fois que le RenderScene est appelé et que la condition est vérifié le compteur est décrémenté
 	}
 	else{
 	    vibrationtab[0] = 0.0;
@@ -198,9 +198,10 @@ void RenderScene(void) {
 	}
 
     glUniform2fv(locVib, 1, vibrationtab);
+	//_______________________
 
-    glTranslatef(0.0,0.0,zPlan);
-	glRotatef(180,0.0,0.0,1.0);
+    glTranslatef(0.0,0.0,zPlan); // Translation sur l'axe z pour visualiser notre cible
+	glRotatef(180,0.0,0.0,1.0); // Rotation de 180° par rapport à l'axe des z pour mettre notre cible dans le bon sens
 
 	//Modification de la matrice de modélisation de la scène
 	glMatrixMode(GL_MODELVIEW);
@@ -212,12 +213,8 @@ void RenderScene(void) {
 	glRotatef(angle_x,1,0,0);
 	glRotatef(angle_y,0,1,0);
 
-
-
 	//Parce qu'on avait pas vu encore les dsiplay List...
 	glCallList(monObjet.id);
-
-
 	glutSwapBuffers();
 }
 
@@ -269,7 +266,7 @@ void SetShaders(void) {
 	basic_frag.ReadSource("basic.frag");
 	raffin_vert.ReadSource("raffin.vert");
 	raffin_frag.ReadSource("raffin.frag");
-	night_vert.ReadSource("raffin.vert"); // On garde le raffin.vert même pour le mode nuit (atm)
+	night_vert.ReadSource("raffin.vert"); // On garde le raffin.vert même pour le mode nuit
 	night_frag.ReadSource("nuit.frag");
 
 	// Compilation :

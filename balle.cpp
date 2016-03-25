@@ -37,10 +37,10 @@ bool Balle::avancer(Objet& objet, float& vib, float zPlan, GLint locCDeform, GLi
     glPopMatrix();
 
     // Premier test pour savoir si la balle à z = zPlan est compris dans les coordoonées de la texture
-    if(PositionBalle.z <= (zPlan + rayonDeform)){
+    if(PositionBalle.z <= (zPlan - rayonDeform)){
         if( PositionBalle.x >= (objet.min.x)-rayonDeform && PositionBalle.x <= (objet.max.x)+rayonDeform ){
             if( PositionBalle.y >= (objet.min.y)-rayonDeform && PositionBalle.y <= (objet.max.y)+rayonDeform ){
-                std::cerr<<"Well done"<<std::endl;
+                //std::cerr<<"Well done"<<std::endl;
 
                 tabCD[0] = centreDeform.x;
                 tabCD[1] = centreDeform.y;
