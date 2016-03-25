@@ -62,7 +62,6 @@ float vibrationtab[2] = {0.0, 0.0};
 
 // Fonction s'occupant du déplacement de la texture
 void Deplacement(){
-
 	if(monObjet.max.x + (monObjet.max.x - monObjet.min.x)/2>windowWidth/2-1)
 		depX = -depX;
 	if(monObjet.min.x - (monObjet.max.x - monObjet.min.x)/2<-(windowWidth/2-1))
@@ -190,7 +189,7 @@ void RenderScene(void) {
 	if(vibration>0){
 	    vibrationtab[0] = float( (rand()%20)-10) ; // On passe un vec2 au vertex shader avec des valeurs randoms pour x et y (entre -10 et 10)
 	    vibrationtab[1] = float( (rand()%20)-10) ;
-	    vibration--; // A chaque fois que le RenderScene est appelé et que la condition est vérifié le compteur est décrémenté
+	    vibration--; // A chaque fois que le RenderScene est appelé et que la condition est vérifiée le compteur est décrémenté
 	}
 	else{
 	    vibrationtab[0] = 0.0;
@@ -274,7 +273,7 @@ void SetShaders(void) {
 	basic_frag.Compile();
 	raffin_vert.Compile();
 	raffin_frag.Compile();
-	night_vert.Compile();
+	//night_vert.Compile(); // Inutilisé ici
 	night_frag.Compile();
 
 	// Info Shader :
@@ -315,6 +314,7 @@ void SetShaders(void) {
 	// Info Program :
 	PrintProgramInfo(raffin_shader -> idprogram);
 	PrintProgramInfo(basic_shader -> idprogram);
+	PrintProgramInfo(night_shader -> idprogram);
 }
 
 
